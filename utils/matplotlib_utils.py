@@ -624,11 +624,119 @@ def save_fig_matplotlib(fig, file_path: str) -> None:
 #     return f, title
 # =============================================================================
 
+#%%
+def create_heatmap_matplotlib(data, ax=None, **kwargs):
+    """
+    Creates a heatmap using Matplotlib with customizable parameters passed via kwargs.
+
+    Parameters:
+    - data: 2D numpy array or list representing heatmap values.
+    - ax: Matplotlib axis object to plot on. If None, creates a new axis.
+    - kwargs: Dictionary of keyword arguments for customization.
+
+    Returns:
+    - ax: Matplotlib Axes object containing the heatmap.
+    """
+    # Heatmap properties
+    heatmap_props = kwargs.get("heatmap_props", {})
+    heatmap_props = {
+        "vmin": heatmap_props.get("vmin", None),  # Min value for color scale
+        "vmax": heatmap_props.get("vmax", None),  # Max value for color scale
+        "cmap": heatmap_props.get("cmap", "viridis"),  # Color map
+    }
+    
+    # Axis labels
+    axis_props = kwargs.get("axis_props", {})
+    axis_props = {
+        "x_title": axis_props.get("x_title", "X Axis"),
+        "y_title": axis_props.get("y_title", "Y Axis"),
+        "x_ticklabels": axis_props.get("x_ticklabels", None),
+        "y_ticklabels": axis_props.get("y_ticklabels", None),
+        "x_tickangle": axis_props.get("x_tickangle", 0),
+    }
+
+    # Title properties
+    title_props = kwargs.get("title_props", {})
+    title_props = {
+        "text": title_props.get("text", "Heatmap"),
+        "font_size": title_props.get("font_size", 16),
+    }
+
+    # Annotations
+    annotation_props = kwargs.get("annotation_props", {})
+    annotation_props = {
+        "show_annotation": annotation_props.get("show_annotation", True),  # Show annotations
+        "annotation_color": annotation_props.get("annotation_color", "auto"),
+    }
+    
+    # If no axis is provided, create one
+    if ax is None:
+        fig, ax = plt.subplots(figsize=kwargs.get("figsize", (8, 6)))
+
+    # Create heatmap
+    im = ax.imshow(
+        data,
+        cmap=heatmap_props["cmap"],
+        vmin=heatmap_props["vmin"],
+        vmax=heatmap_props["vmax"],
+    )
+
+    # Add colorbar
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.set_label("Color Scale")
+
+    # Set axis titles
+    ax.set_xlabel(axis_props["x_title"])
+    ax.set_ylabel(axis_props["y_title"])
+
+    # Set axis tick labels
+    if axis_props["x_ticklabels"] is not None:
+        ax.set_xticks(range(len(axis_props["x_ticklabels"])))
+        ax.set_xticklabels(axis_props["x_ticklabels"], rotation=axis_props["x_tickangle"])
+    if axis_props["y_ticklabels"] is not None:
+        ax.set_yticks(range(len(axis_props["y_ticklabels"])))
+        ax.set_yticklabels(axis_props["y_ticklabels"])
+
+    # Add annotations
+    if annotation_props["show_annotation"]:
+        zmin = heatmap_props.get("vmin", np.min(data))
+        zmax = heatmap_props.get("vmax", np.max(data))
+        for i in range(data.shape[0]):
+            for j in range(data.shape[1]):
+                normalized_value = (data[i][j] - zmin) / (zmax - zmin) if zmax > zmin else 0.5
+                
+                if annotation_props["annotation_color"] == "auto":
+                    text_color = "white" if normalized_value < 0.5 else "black"
+                else:
+                    text_color = annotation_props["annotation_color"]
+
+                ax.text(
+                    j, i, f"{data[i, j]:.2f}",
+                    ha="center", va="center", color=text_color
+                )
+
+    # Add title
+    ax.set_title(title_props["text"], fontsize=title_props["font_size"])
+
+    return ax
 
 #%%
 if __name__ == "__main__":
     current_working_directory = Path.cwd()
     output_file_path = current_working_directory / 'plots'
+    
+    data = np.random.uniform(-1, 1, size=(10, 10))
+    data = np.round(data, 2)
+    
+    ax = create_heatmap_matplotlib(
+        data,
+        heatmap_props={"vmin": -1, "vmax": 1, "cmap": "cividis"},
+        axis_props={"x_title": "Columns", "y_title": "Rows", "x_tickangle": 45},
+        annotation_props={"show_annotation": True},
+        title_props={"text": "Custom Heatmap", "font_size": 18},
+        figsize=(10, 8)
+    )
+    plt.show()
 
 #%%
     import random
