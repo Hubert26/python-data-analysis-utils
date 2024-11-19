@@ -624,98 +624,109 @@ def save_fig_matplotlib(fig, file_path: str) -> None:
 #     return f, title
 # =============================================================================
 
+#%%
+def create_heatmap_matplotlib(data, ax=None, **kwargs):
+    """
+    Creates a heatmap using Matplotlib with customizable parameters passed via kwargs.
+
+    Parameters:
+    - data: 2D numpy array or list representing heatmap values.
+    - ax: Matplotlib axis object to plot on. If None, creates a new axis.
+    - kwargs: Dictionary of keyword arguments for customization.
+
+    Returns:
+    - ax: Matplotlib Axes object containing the heatmap.
+    """
+    # Heatmap properties
+    heatmap_props = kwargs.get("heatmap_props", {})
+    heatmap_props = {
+        "vmin": heatmap_props.get("vmin", np.min(data)),  # Min value for color scale
+        "vmax": heatmap_props.get("vmax", np.max(data)),  # Max value for color scale
+        "cmap": heatmap_props.get("cmap", "viridis"),  # Color map
+    }
+    
+    # Axis labels
+    axis_props = kwargs.get("axis_props", {})
+    axis_props = {
+        "x_title": axis_props.get("x_title", "X Axis"),
+        "y_title": axis_props.get("y_title", "Y Axis"),
+        "x_ticklabels": axis_props.get("x_ticklabels", None),
+        "y_ticklabels": axis_props.get("y_ticklabels", None),
+        "x_tickangle": axis_props.get("x_tickangle", 0),
+    }
+
+    # Title properties
+    title_props = kwargs.get("title_props", {})
+    title_props = {
+        "text": title_props.get("text", "Heatmap"),
+        "font_size": title_props.get("font_size", 16),
+    }
+
+    # Annotations
+    annotation_props = kwargs.get("annotation_props", {})
+    annotation_props = {
+        "show_annotation": annotation_props.get("show_annotation", True),  # Show annotations
+        "annotation_color": annotation_props.get("annotation_color", "auto"),
+    }
+    
+    # If no axis is provided, create one
+    if ax is None:
+        fig, ax = plt.subplots(figsize=kwargs.get("figsize", (8, 6)))
+
+    # Create heatmap
+    im = ax.imshow(
+        data,
+        cmap=heatmap_props["cmap"],
+        vmin=heatmap_props["vmin"],
+        vmax=heatmap_props["vmax"],
+    )
+
+    # Add colorbar
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.set_label("Color Scale")
+
+    # Set axis titles
+    ax.set_xlabel(axis_props["x_title"])
+    ax.set_ylabel(axis_props["y_title"])
+
+    # Set axis tick labels
+    if axis_props["x_ticklabels"] is not None:
+        ax.set_xticks(range(len(axis_props["x_ticklabels"])))
+        ax.set_xticklabels(axis_props["x_ticklabels"], rotation=axis_props["x_tickangle"])
+    if axis_props["y_ticklabels"] is not None:
+        ax.set_yticks(range(len(axis_props["y_ticklabels"])))
+        ax.set_yticklabels(axis_props["y_ticklabels"])
+
+    # Add annotations
+    if annotation_props["show_annotation"]:
+        zmin = heatmap_props.get("vmin", np.min(data))
+        zmax = heatmap_props.get("vmax", np.max(data))
+        for i in range(data.shape[0]):
+            for j in range(data.shape[1]):
+                normalized_value = (data[i][j] - zmin) / (zmax - zmin) if zmax > zmin else 0.5
+                
+                if annotation_props["annotation_color"] == "auto":
+                    text_color = "white" if normalized_value < 0.5 else "black"
+                else:
+                    text_color = annotation_props["annotation_color"]
+
+                ax.text(
+                    j, i, f"{data[i, j]:.2f}",
+                    ha="center", va="center", color=text_color
+                )
+
+    # Add title
+    ax.set_title(title_props["text"], fontsize=title_props["font_size"])
+
+    return ax
+#%%
+
+
+
+
 
 #%%
 if __name__ == "__main__":
     current_working_directory = Path.cwd()
     output_file_path = current_working_directory / 'plots'
-
-#%%
-    import random
-    import string
-    
-    # Define the configuration dictionary with different parameter ranges
-    config_data = {
-        "allowed_keys": list(string.ascii_uppercase),  # List of uppercase letters
-        "allowed_values": (0, 20),                     # Range of values to randomly pick from
-        "allowed_num_keys_select": 10,                  # Number of keys to select from allowed_keys
-        "allowed_num_keys_dict": (2, 10),               # Range of number of keys per dictionary
-        "allowed_num_dicts": (5, 10)                    # Range for number of dictionaries to generate
-    }
-    
-    # Determine the number of dictionaries to generate
-    num_dicts = random.randint(config_data["allowed_num_dicts"][0], config_data["allowed_num_dicts"][1])
-    
-    # Randomly select a subset of keys to be used across all dictionaries
-    selected_keys = random.sample(config_data["allowed_keys"], config_data["allowed_num_keys_select"])
-    
-    # Generate list of dictionaries with random values
-    data = []
-    for _ in range(num_dicts):
-        # Determine the number of keys for this dictionary
-        num_keys = random.randint(config_data["allowed_num_keys_dict"][0], config_data["allowed_num_keys_dict"][1])
-        
-        # Randomly sample keys without replacement from the selected subset
-        keys = random.sample(selected_keys, num_keys)
-        
-        # Generate random values for each key
-        dictionary = {key: random.randint(config_data["allowed_values"][0], config_data["allowed_values"][1]) for key in keys}
-        
-        # Append the dictionary to the data list
-        data.append(dictionary)
-    
-    print(data)
-
-
-    
-#%%
-    fig1, axes1 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(12, 8))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes1[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig1, file_path=output_file_path / 'subplots_multi_series_bar_charts1.png')
-
-#%%
-    fig2, axes2 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(24, 16))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes2[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig2, file_path=output_file_path / 'subplots_multi_series_bar_charts2.png')
-
-#%%
-    fig3, axes3 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(6, 4))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes3[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig3, file_path=output_file_path / 'subplots_multi_series_bar_charts3.png')
-
-#%%
-    fig4, axes4 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(12, 4))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes4[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig4, file_path=output_file_path / 'subplots_multi_series_bar_charts4.png')
-
-#%%
-# =============================================================================
-#     create_multi_series_bar_chart_matplotlib(data2, ax=axes[1], title_props={'text': 'Wykres 2'}, legend_props={'legend_labels': ['Seria A', 'Seria B']}, bar_props={'color': ['red', 'green']}, additional_line={'show': True, 'show_in_legend': False, 'axis': 'x', 'function': lambda x: x+3})
-#     create_multi_series_bar_chart_matplotlib(data3, ax=axes[2], title_props={'text': 'Wykres 3'}, invert_axes=True, legend_props={'legend_labels': ['Seria X', 'Seria Y']}, additional_line={'show': True, 'axis': 'y', 'function': lambda x: 0*x+3})
-#     create_multi_series_bar_chart_matplotlib(data4, ax=axes[3], title_props={'text': 'Wykres 4'}, legend_props={'show_legend': False}, bar_props={'alpha': 0.6}, ticks_props={'x_rotation': 45})
-# =============================================================================
     

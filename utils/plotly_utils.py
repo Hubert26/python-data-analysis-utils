@@ -10,6 +10,7 @@ from plotly.subplots import make_subplots
 import plotly.io as pio
 pio.renderers.default='browser'
 from pathlib import Path
+import numpy as np
 
 from utils.file_utils import create_directory
 
@@ -175,45 +176,150 @@ def save_html_plotly(fig, file_path: str) -> None:
 
 
 #%%
-# =============================================================================
-# if __name__ == "__main__":
-#     current_working_directory = Path.cwd()
-#     output_file_path = current_working_directory / 'plots' / 'create_multi_series_scatter_plot_plotly.html'
-#     
-#     data = [
-#         {'x': [1, 2, 3], 'y': [4, 5, 6]},
-#         {'x': [1, 2, 3], 'y': [7, 8, 9]},
-#         {'x': [1, 2, 3], 'y': [10, 11, 12]}
-#     ]
-#     
-#     fig = create_multi_series_scatter_plot_plotly(
-#         data,
-#         legend_labels=['Series 1', 'Series 2', 'Series 3'],
-#         scatter_colors=['red', 'blue', 'green'],
-#         plot_title='Example Multi-Series Scatter Plot',
-#         x_label='Time [ms]',
-#         y_label='Value',
-#         show_grid=True
-#     )
-#     
-#     save_html_plotly(fig, output_file_path)
-# =============================================================================
+def create_heatmap_plotly(data, **kwargs):
+    """
+    Creates a heatmap using Plotly with customizable parameters passed via kwargs.
+    
+    Parameters:
+    - data: 2D list, numpy array, or pandas DataFrame representing heatmap values.
+    - kwargs: Dictionary of keyword arguments for customization.
+    
+    Returns:
+    - fig: Plotly Figure object containing the heatmap.
+    """
+    # Heatmap properties
+    heatmap_props = kwargs.get("heatmap_props", {})
+    heatmap_props = {
+        "zmin": heatmap_props.get("zmin", None),  # Min value for color scale
+        "zmax": heatmap_props.get("zmax", None),  # Max value for color scale
+        "colorscale": heatmap_props.get("colorscale", "Viridis"),  # Color scale
+        "reversescale": heatmap_props.get("reversescale", False),  # Reverse color scale
+        "showscale": heatmap_props.get("showscale", True),  # Show color bar
+    }
+    
+    # Axis labels
+    axis_props = kwargs.get("axis_props", {})
+    axis_props = {
+        "x_title": axis_props.get("x_title", "X Axis"),
+        "y_title": axis_props.get("y_title", "Y Axis"),
+        "x_tickangle": axis_props.get("x_tickangle", 0),
+        "x_tickvals": axis_props.get("x_tickvals", None),
+        "x_ticktext": axis_props.get("x_ticktext", None),
+        "y_tickvals": axis_props.get("y_tickvals", None),
+        "y_ticktext": axis_props.get("y_ticktext", None),
+    }
+    
+    # Title properties
+    title_props = kwargs.get("title_props", {})
+    title_props = {
+        "text": title_props.get("text", "Heatmap"),
+        "x": title_props.get("x", 0.5),
+        "y": title_props.get("y", 0.9),
+        "font_size": title_props.get("font_size", 16),
+    }
+    
+    #Annotations
+    annotation_props = kwargs.get("annotation_props", {})
+    annotation_props = {
+        "show_annotation": annotation_props.get("show_annotation", True),  # Show annotations
+        "annotation_color": annotation_props.get("annotation_color", "auto")
+        }
+
+    # Grid properties
+    grid_props = kwargs.get("grid_props", {})
+    grid_props = {
+        "show_grid": grid_props.get("show_grid", True),
+        "grid_width": grid_props.get("grid_width", 0.5),
+        "grid_color": grid_props.get("grid_color", "gray"),
+    }
+    
+    # Create heatmap
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=data,
+            zmin=heatmap_props["zmin"],
+            zmax=heatmap_props["zmax"],
+            colorscale=heatmap_props["colorscale"],
+            reversescale=heatmap_props["reversescale"],
+            showscale=heatmap_props["showscale"],
+        )
+    )
+    
+    # Update axis properties
+    fig.update_layout(
+        xaxis=dict(
+            title=axis_props["x_title"],
+            tickangle=axis_props["x_tickangle"],
+            tickvals=axis_props["x_tickvals"],
+            ticktext=axis_props["x_ticktext"],
+            showgrid=grid_props["show_grid"],
+            gridwidth=grid_props["grid_width"],
+            gridcolor=grid_props["grid_color"],
+        ),
+        yaxis=dict(
+            title=axis_props["y_title"],
+            tickvals=axis_props["y_tickvals"],
+            ticktext=axis_props["y_ticktext"],
+            showgrid=grid_props["show_grid"],
+            gridwidth=grid_props["grid_width"],
+            gridcolor=grid_props["grid_color"],
+        ),
+    )
+    
+    if annotation_props['show_annotation']:
+        annotations = []
+        zmin = heatmap_props.get("zmin", np.min(data))
+        zmax = heatmap_props.get("zmax", np.max(data))
+        for i in range(len(data)):
+            for j in range(len(data[0])):
+                normalized_value = (data[i][j] - zmin) / (zmax - zmin) if zmax > zmin else 0.5
+                
+                if annotation_props['annotation_color'] == "auto":
+                    text_color = "white" if normalized_value < 0.5 else "black"
+                else:
+                    text_color = annotation_props['annotation_color']
+                    
+                annotations.append(
+                    dict(
+                        x=j,
+                        y=i,
+                        text=str(data[i][j]),
+                        showarrow=False,
+                        font=dict(color=text_color)
+                    )
+                )
+        fig.update_layout(annotations=annotations)
+        
+    # Update title
+    fig.update_layout(
+        title=dict(
+            text=title_props["text"],
+            x=title_props["x"],
+            y=title_props["y"],
+            font=dict(size=title_props["font_size"]),
+        )
+    )
+    
+    return fig
+
     
 #%%
 if __name__ == "__main__":
-    data = [
-        {'x': [1, 2, 2, 3, 3, 3, 4, 5]},
-        {'x': [2, 3, 3, 4, 5, 5, 5, 6]}
-    ]
-    
-    fig = create_multi_series_histogram_plotly(
-        data, 
-        legend_labels=['Series 1', 'Series 2'], 
-        bar_colors=['blue', 'orange'],
-        plot_title="Custom Histogram",
-        x_label="Values",
-        y_label="Frequency",
-        show_grid=True
-    )
-    fig.show()
+    current_working_directory = Path.cwd()
+    output_file_path = current_working_directory / 'plots'
 
+
+#%%
+    data1 = np.random.randn(10, 10)
+    data1 = np.round(data1, 2)
+    
+    heatmap1_fig = create_heatmap_plotly(
+        data1,
+        heatmap_props={"colorscale": "Cividis", "zmin": -1, "zmax": 1},
+        axis_props={"x_title": "Columns", "y_title": "Rows", "x_tickangle": 45},
+        annotation_props={"show_annotation": True},
+        grid_props={"show_grid": True, "grid_color": "blue"},
+        title_props={"text": "Custom Heatmap", "font_size": 20}
+    )
+       
+    heatmap1_fig.show()
