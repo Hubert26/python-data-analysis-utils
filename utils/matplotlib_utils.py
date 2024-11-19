@@ -640,8 +640,8 @@ def create_heatmap_matplotlib(data, ax=None, **kwargs):
     # Heatmap properties
     heatmap_props = kwargs.get("heatmap_props", {})
     heatmap_props = {
-        "vmin": heatmap_props.get("vmin", None),  # Min value for color scale
-        "vmax": heatmap_props.get("vmax", None),  # Max value for color scale
+        "vmin": heatmap_props.get("vmin", np.min(data)),  # Min value for color scale
+        "vmax": heatmap_props.get("vmax", np.max(data)),  # Max value for color scale
         "cmap": heatmap_props.get("cmap", "viridis"),  # Color map
     }
     
@@ -719,111 +719,14 @@ def create_heatmap_matplotlib(data, ax=None, **kwargs):
     ax.set_title(title_props["text"], fontsize=title_props["font_size"])
 
     return ax
+#%%
+
+
+
+
 
 #%%
 if __name__ == "__main__":
     current_working_directory = Path.cwd()
     output_file_path = current_working_directory / 'plots'
-    
-    data = np.random.uniform(-1, 1, size=(10, 10))
-    data = np.round(data, 2)
-    
-    ax = create_heatmap_matplotlib(
-        data,
-        heatmap_props={"vmin": -1, "vmax": 1, "cmap": "cividis"},
-        axis_props={"x_title": "Columns", "y_title": "Rows", "x_tickangle": 45},
-        annotation_props={"show_annotation": True},
-        title_props={"text": "Custom Heatmap", "font_size": 18},
-        figsize=(10, 8)
-    )
-    plt.show()
-
-#%%
-    import random
-    import string
-    
-    # Define the configuration dictionary with different parameter ranges
-    config_data = {
-        "allowed_keys": list(string.ascii_uppercase),  # List of uppercase letters
-        "allowed_values": (0, 20),                     # Range of values to randomly pick from
-        "allowed_num_keys_select": 10,                  # Number of keys to select from allowed_keys
-        "allowed_num_keys_dict": (2, 10),               # Range of number of keys per dictionary
-        "allowed_num_dicts": (5, 10)                    # Range for number of dictionaries to generate
-    }
-    
-    # Determine the number of dictionaries to generate
-    num_dicts = random.randint(config_data["allowed_num_dicts"][0], config_data["allowed_num_dicts"][1])
-    
-    # Randomly select a subset of keys to be used across all dictionaries
-    selected_keys = random.sample(config_data["allowed_keys"], config_data["allowed_num_keys_select"])
-    
-    # Generate list of dictionaries with random values
-    data = []
-    for _ in range(num_dicts):
-        # Determine the number of keys for this dictionary
-        num_keys = random.randint(config_data["allowed_num_keys_dict"][0], config_data["allowed_num_keys_dict"][1])
-        
-        # Randomly sample keys without replacement from the selected subset
-        keys = random.sample(selected_keys, num_keys)
-        
-        # Generate random values for each key
-        dictionary = {key: random.randint(config_data["allowed_values"][0], config_data["allowed_values"][1]) for key in keys}
-        
-        # Append the dictionary to the data list
-        data.append(dictionary)
-    
-    print(data)
-
-
-    
-#%%
-    fig1, axes1 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(12, 8))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes1[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig1, file_path=output_file_path / 'subplots_multi_series_bar_charts1.png')
-
-#%%
-    fig2, axes2 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(24, 16))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes2[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig2, file_path=output_file_path / 'subplots_multi_series_bar_charts2.png')
-
-#%%
-    fig3, axes3 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(6, 4))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes3[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig3, file_path=output_file_path / 'subplots_multi_series_bar_charts3.png')
-
-#%%
-    fig4, axes4 = create_subplots_matplotlib(n_plots=1, n_cols=1, figsize=(12, 4))
-
-    create_multi_series_bar_chart_matplotlib(data, ax=axes4[0], title_props={'text': 'Wykres 1'})
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save plots to file
-    save_fig_matplotlib(fig4, file_path=output_file_path / 'subplots_multi_series_bar_charts4.png')
-
-#%%
-# =============================================================================
-#     create_multi_series_bar_chart_matplotlib(data2, ax=axes[1], title_props={'text': 'Wykres 2'}, legend_props={'legend_labels': ['Seria A', 'Seria B']}, bar_props={'color': ['red', 'green']}, additional_line={'show': True, 'show_in_legend': False, 'axis': 'x', 'function': lambda x: x+3})
-#     create_multi_series_bar_chart_matplotlib(data3, ax=axes[2], title_props={'text': 'Wykres 3'}, invert_axes=True, legend_props={'legend_labels': ['Seria X', 'Seria Y']}, additional_line={'show': True, 'axis': 'y', 'function': lambda x: 0*x+3})
-#     create_multi_series_bar_chart_matplotlib(data4, ax=axes[3], title_props={'text': 'Wykres 4'}, legend_props={'show_legend': False}, bar_props={'alpha': 0.6}, ticks_props={'x_rotation': 45})
-# =============================================================================
     
