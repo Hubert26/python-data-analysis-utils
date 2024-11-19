@@ -635,6 +635,7 @@ def create_heatmap_matplotlib(data, ax=None, **kwargs):
     - kwargs: Dictionary of keyword arguments for customization.
 
     Returns:
+    - fig: Matplotlib Figure object (in case you need it later)
     - ax: Matplotlib Axes object containing the heatmap.
     """
     # Heatmap properties
@@ -672,6 +673,8 @@ def create_heatmap_matplotlib(data, ax=None, **kwargs):
     # If no axis is provided, create one
     if ax is None:
         fig, ax = plt.subplots(figsize=kwargs.get("figsize", (8, 6)))
+    else:
+        fig = ax.figure  # Get the figure object if an axis is provided
 
     # Create heatmap
     im = ax.imshow(
@@ -718,7 +721,7 @@ def create_heatmap_matplotlib(data, ax=None, **kwargs):
     # Add title
     ax.set_title(title_props["text"], fontsize=title_props["font_size"])
 
-    return ax
+    return fig, ax
 #%%
 
 
