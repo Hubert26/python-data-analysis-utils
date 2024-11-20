@@ -1,0 +1,19 @@
+# Core dependencies
+numpy>=1.19
+pandas>=1.2
+
+# Optional dependencies
+# Plotly functionality
+plotly>=5.0
+
+# Matplotlib functionality
+matplotlib>=3.3
+
+# Dataframe functionality
+openpyxl>=3.0
+
+# Math and signal processing functionality
+scipy>=1.5
+
+# Machine learning functionality
+scikit-learn>=0.24
