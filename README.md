@@ -10,6 +10,12 @@ Clone the `python-utils` repository to your preferred location::
 git clone https://github.com/Hubert26/python-utils.git
 ```
 
+### 2. Navigate to your project directory:
+Go to the directory of your project (`your_project`) where you want to install `python-utils` as a dependency:
+```
+cd /path/to/your_project
+```
+
 ### 3. Install the `python-utils` library with the desired optional dependencies:
 Specify the path to the python-utils directory during installation. Choose the appropriate installation option:
 + Full Installation (includes all optional dependencies):
@@ -31,24 +37,48 @@ pip install "/path/to/python-utils"
 2. Any changes to the `python-utils` project will reflect automatically in this setup because of the editable installation.
 
 ## Using python-utils as a Standalone Project
-### 1. Clone the Repository:
+### Using `environment.yml` with Conda
+If you prefer using Conda to set up the environment, follow these steps:
+1. Clone the Repository:
 ```
 git clone https://github.com/Hubert26/python-utils.git
 ```
 
-### 2. Navigate to the python-utils project directory:
+2. Navigate to the `python-utils` project directory:
 ```
-cd python-utils
+cd "/path/to/python-utils"
 ```
 
-### 3. Create the Conda environment from the file:
+3. Create the Conda environment from the `environment.yml` file:
 ```
 conda env create -f environment.yml
 ```
-### 4. Activate the environment:
+4. Activate the environment:
 ```
 conda activate python-utils-env
 ```
+
+### Using `requirements.txt` with pip
+If you prefer using `pip` and `requirements.txt` for installation, follow these steps:
+1. Clone the Repository:
+```
+git clone https://github.com/Hubert26/python-utils.git
+```
+
+2. Navigate to the `python-utils` project directory:
+```
+cd "/path/to/python-utils"
+```
+
+3. Install the required dependencies using `pip`:
+```
+pip install -r requirements.txt
+```
+
+### Key Notes:
+1. Replace `"/path/to/python-utils"` with the actual path to the `python-utils` directory. This can be:
++ An absolute path, e.g., `C:/repositories/python-utils`.
++ A relative path from your current working directory, e.g., `../python-utils`.
 
 ## Requirements
 + Python >= 3.8
