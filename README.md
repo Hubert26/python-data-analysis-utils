@@ -37,6 +37,15 @@ pip install "/path/to/python-utils"
 + An absolute path, e.g., `C:/repositories/python-utils`.
 + A relative path from your current working directory, e.g., `../python-utils`.
 2. Any changes to the `python-utils` project will reflect automatically in this setup because of the editable installation.
+3. You can directly import modules from the `utils` package without referencing `src`. This is configured in the `pyproject.toml` file using the `[tool.setuptools]` section.
+Example Usage in Your Project
+```
+# Importing a specific module
+from utils.plotly_utils import create_scatter_plot
+
+# Importing multiple utilities
+from utils import file_utils, math_utils
+```
 
 ### Using python-utils as a Standalone Project
 ### Using `environment.yml` with Conda
