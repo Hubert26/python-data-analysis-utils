@@ -21,3 +21,7 @@ matplotlib = ["matplotlib>=3.3"]
 dataframe = ["pandas>=1.2", "openpyxl>=3.0"]
 math_signals = ["scipy>=1.5"]
 ml = ["scikit-learn>=0.24"]
+
+[tool.setuptools]
+packages = ["utils"]
+package-dir = {"" = "src"}

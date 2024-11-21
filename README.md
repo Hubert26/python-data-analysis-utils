@@ -123,4 +123,4 @@ python-utils/
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/Hubert26/python-utils/blob/main/LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/Hubert26/python-utils/blob/main/LICENSE) file for details.
