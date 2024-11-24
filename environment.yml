@@ -1,4 +1,4 @@
-name python-utils-env
+name python-data-analysis-utils-env
 channels
   - defaults
 dependencies
