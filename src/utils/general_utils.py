@@ -2,7 +2,7 @@
 """
 Created on Thu Nov 28 17:42:34 2024
 
-@author: huber
+@author: Hubert Szewczyk
 """
 from collections import defaultdict
 
